@@ -69,8 +69,28 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     try {
       const res = await getAllUsers();
       set({ users: res.users, isLoading: false });
-    } catch (err: any) {
+    } catch (err: Error) {
       set({ isLoading: false, error: err.message || "Failed to fetch users" });
+    }
+  },
+
+  fetchActiveUsers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await getActiveUsers();
+      set({ activeUsers: res.users || [], isLoading: false });
+    } catch (err: Error) {
+      set({ isLoading: false, error: err.message || "Failed to fetch active users" });
+    }
+  },
+
+  fetchInactiveUsers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await getInactiveUsers();
+      set({ inactiveUsers: res.users || [], isLoading: false });
+    } catch (err: Error) {
+      set({ isLoading: false, error: err.message || "Failed to fetch inactive users" });
     }
   },
 
@@ -79,7 +99,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     try {
       const res = await getAllMods();
       set({ mods: res.mods, isLoading: false });
-    } catch (err: any) {
+    } catch (err: Error) {
       set({ isLoading: false, error: err.message || "Failed to fetch mods" });
     }
   },
@@ -90,7 +110,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       const res = await getModRequests();
       // Assuming response structure, adjust based on actual API return
       set({ modRequests: res.requests || [], isLoading: false });
-    } catch (err: any) {
+    } catch (err: Error) {
       set({
         isLoading: false,
         error: err.message || "Failed to fetch requests",
@@ -106,7 +126,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         u._id === userId ? { ...u, isActive: false } : u
       );
       set({ users: updatedUsers });
-    } catch (err: any) {
+    } catch (err: Error) {
       console.error("Failed to deactivate user", err);
     }
   },
@@ -118,7 +138,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         u._id === userId ? { ...u, isActive: true } : u
       );
       set({ users: updatedUsers });
-    } catch (err: any) {
+    } catch (err: Error) {
       console.error("Failed to activate user", err);
     }
   },
@@ -128,7 +148,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       await deleteUser(userId);
       const updatedUsers = get().users.filter((u) => u._id !== userId);
       set({ users: updatedUsers });
-    } catch (err: any) {
+    } catch (err: Error) {
       console.error("Failed to delete user", err);
     }
   },
@@ -147,8 +167,17 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       if (action === "approve") {
         get().fetchMods();
       }
-    } catch (err: any) {
+    } catch (err: Error) {
       console.error("Failed to process request", err);
+    }
+  },
+
+  removeModRole: async (userId: string) => {
+    try {
+      const updatedMods = get().mods.filter((m) => m._id !== userId);
+      set({ mods: updatedMods });
+    } catch (err: Error) {
+      console.error("Failed to remove mod role", err);
     }
   },
 }));
