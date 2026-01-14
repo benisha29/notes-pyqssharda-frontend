@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import {
   Note,
+  NoteSearchParams,
   getAllNotes,
+  getRecentNotes,
   getMyNotes,
   searchNotes,
   createNote,
@@ -13,15 +15,20 @@ import { getErrorMessage } from "../lib/utils/errorHandler";
 interface NotesStore {
   myNotes: Note[];
   allNotes: Note[];
+  recentNotes: Note[];
+  searchResults: Note[];
   isLoading: boolean;
   error: string | null;
+  lastSearchParams: NoteSearchParams | null;
 
   fetchAllNotes: () => Promise<void>;
+  fetchRecentNotes: (limit?: number) => Promise<void>;
   fetchMyNotes: () => Promise<void>;
-  searchNotes: (query: string) => Promise<void>;
+  searchNotes: (params: NoteSearchParams) => Promise<void>;
   addNote: (data: FormData) => Promise<void>;
   editNote: (id: string, data: FormData) => Promise<void>;
   removeNote: (id: string) => Promise<void>;
+  clearSearchResults: () => void;
   clearError: () => void;
   resetStore: () => void;
 }
@@ -29,8 +36,11 @@ interface NotesStore {
 export const useNotesStore = create<NotesStore>((set) => ({
   myNotes: [],
   allNotes: [],
+  recentNotes: [],
+  searchResults: [],
   isLoading: false,
   error: null,
+  lastSearchParams: null,
 
   fetchAllNotes: async () => {
     set({ isLoading: true, error: null });
@@ -39,7 +49,24 @@ export const useNotesStore = create<NotesStore>((set) => ({
       const notes = res.notes || [];
       set({ allNotes: notes, isLoading: false });
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to fetch notes", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to fetch notes",
+        isLoading: false,
+      });
+    }
+  },
+
+  fetchRecentNotes: async (limit = 10) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await getRecentNotes(limit);
+      const notes = res.notes || [];
+      set({ recentNotes: notes, isLoading: false });
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error) || "Failed to fetch recent notes",
+        isLoading: false,
+      });
     }
   },
 
@@ -50,18 +77,24 @@ export const useNotesStore = create<NotesStore>((set) => ({
       const notes = res.notes || [];
       set({ myNotes: notes, isLoading: false });
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to fetch my notes", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to fetch my notes",
+        isLoading: false,
+      });
     }
   },
 
-  searchNotes: async (query: string) => {
-    set({ isLoading: true, error: null });
+  searchNotes: async (params: NoteSearchParams) => {
+    set({ isLoading: true, error: null, lastSearchParams: params });
     try {
-      const res = await searchNotes(query);
+      const res = await searchNotes(params);
       const notes = res.notes || [];
-      set({ allNotes: notes, isLoading: false });
+      set({ searchResults: notes, isLoading: false });
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Search failed", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Search failed",
+        isLoading: false,
+      });
     }
   },
 
@@ -70,9 +103,15 @@ export const useNotesStore = create<NotesStore>((set) => ({
     try {
       const res = await createNote(data);
       const newNote = res.note;
-      set((state) => ({ myNotes: [newNote, ...state.myNotes], isLoading: false }));
+      set((state) => ({
+        myNotes: [newNote, ...state.myNotes],
+        isLoading: false,
+      }));
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to add note", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to add note",
+        isLoading: false,
+      });
       throw error;
     }
   },
@@ -85,10 +124,19 @@ export const useNotesStore = create<NotesStore>((set) => ({
       set((state) => ({
         myNotes: state.myNotes.map((n) => (n._id === id ? updatedNote : n)),
         allNotes: state.allNotes.map((n) => (n._id === id ? updatedNote : n)),
+        recentNotes: state.recentNotes.map((n) =>
+          n._id === id ? updatedNote : n
+        ),
+        searchResults: state.searchResults.map((n) =>
+          n._id === id ? updatedNote : n
+        ),
         isLoading: false,
       }));
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to update note", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to update note",
+        isLoading: false,
+      });
       throw error;
     }
   },
@@ -100,15 +148,29 @@ export const useNotesStore = create<NotesStore>((set) => ({
       set((state) => ({
         myNotes: state.myNotes.filter((n) => n._id !== id),
         allNotes: state.allNotes.filter((n) => n._id !== id),
+        recentNotes: state.recentNotes.filter((n) => n._id !== id),
+        searchResults: state.searchResults.filter((n) => n._id !== id),
         isLoading: false,
       }));
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to delete note", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to delete note",
+        isLoading: false,
+      });
       throw error;
     }
   },
 
+  clearSearchResults: () => set({ searchResults: [], lastSearchParams: null }),
   clearError: () => set({ error: null }),
-  resetStore: () => set({ myNotes: [], allNotes: [], isLoading: false, error: null }),
+  resetStore: () =>
+    set({
+      myNotes: [],
+      allNotes: [],
+      recentNotes: [],
+      searchResults: [],
+      isLoading: false,
+      error: null,
+      lastSearchParams: null,
+    }),
 }));
-

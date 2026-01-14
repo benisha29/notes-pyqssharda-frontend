@@ -550,11 +550,11 @@ export default function ExplorePage() {
                   </div>
 
                   {/* Uploaded By */}
-                  {result.uploadedBy && (
+                  {result.userId && typeof result.userId === "object" && (
                     <div className="pt-3 border-t border-gray-200 text-xs text-gray-500">
                       by{" "}
                       <span className="font-semibold text-gray-700">
-                        {result.uploadedBy.username}
+                        {result.userId.username}
                       </span>
                     </div>
                   )}

@@ -4,13 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import useAuthStore from "@/stores/authStore";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import ModRequestForm from "@/components/ModRequestForm";
 
 const AuthMobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showModRequestModal, setShowModRequestModal] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const logout = useAuthStore((s) => s.logout);
+  const { logout, user } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -101,7 +103,6 @@ const AuthMobileNav = () => {
           )}
         </button>
       </div>
-
       {isProfileOpen && (
         <div
           ref={profileRef}
@@ -128,6 +129,17 @@ const AuthMobileNav = () => {
           >
             Change Password
           </Link>
+          {user?.role === "user" && (
+            <button
+              onClick={() => {
+                setShowModRequestModal(true);
+                setIsProfileOpen(false);
+              }}
+              className="w-full text-center px-4 py-2 bg-purple-300 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-sm font-bold"
+            >
+              🎯 Become Moderator
+            </button>
+          )}
           <button
             onClick={handleLogout}
             className="w-full text-center px-4 py-2 bg-red-400 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-sm font-bold"
@@ -136,7 +148,6 @@ const AuthMobileNav = () => {
           </button>
         </div>
       )}
-
       {isOpen && (
         <div className="flex flex-col gap-4 mt-4 pb-4 font-bold">
           <Link
@@ -162,6 +173,20 @@ const AuthMobileNav = () => {
           </Link>
         </div>
       )}
+      {/* Moderator Request Modal */}
+      {showModRequestModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="relative max-w-2xl w-full">
+            <ModRequestForm
+              onClose={() => setShowModRequestModal(false)}
+              onSuccess={() => {
+                setShowModRequestModal(false);
+                toast.success("Request submitted successfully!");
+              }}
+            />
+          </div>
+        </div>
+      )}{" "}
     </div>
   );
 };

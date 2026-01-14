@@ -5,11 +5,17 @@ export interface Syllabus {
   title: string;
   fileUrl: string;
   publicId: string;
-  userId: string;
+  userId:
+    | {
+        _id: string;
+        username: string;
+      }
+    | string;
   program: string;
   courseCode: string;
   courseName: string;
   semester: number;
+  year?: string;
   status: "pending" | "approved" | "rejected";
   approvedBy?: string;
   approvedAt?: string;
@@ -20,8 +26,23 @@ export interface Syllabus {
   updatedAt: string;
 }
 
+export interface SyllabusSearchParams {
+  query?: string;
+  program?: string;
+  courseCode?: string;
+  semester?: string;
+  year?: string;
+}
+
 export const getAllSyllabus = async () => {
   const response = await api.get("/syllabus/all-syllabus");
+  return response.data;
+};
+
+export const getRecentSyllabus = async (limit: number = 10) => {
+  const response = await api.get("/syllabus/all-syllabus", {
+    params: { limit },
+  });
   return response.data;
 };
 
@@ -53,9 +74,15 @@ export const deleteSyllabus = async (id: string) => {
   return response.data;
 };
 
-export const searchSyllabus = async (query: string) => {
+export const searchSyllabus = async (params: SyllabusSearchParams) => {
   const response = await api.get("/syllabus/search-syllabus", {
-    params: { q: query },
+    params: {
+      ...(params.query && { query: params.query }),
+      ...(params.program && { program: params.program }),
+      ...(params.courseCode && { courseCode: params.courseCode }),
+      ...(params.semester && { semester: params.semester }),
+      ...(params.year && { year: params.year }),
+    },
   });
   return response.data;
 };

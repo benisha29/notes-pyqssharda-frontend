@@ -9,10 +9,11 @@ import {
   getAllMods,
   getModRequests,
   reviewModRequest,
+  removeModRole,
 } from "@/lib/api/admin.api";
 
 interface User {
-  _id: string; // Backend uses _id
+  _id: string;
   name: string;
   email: string;
   role: string;
@@ -20,14 +21,22 @@ interface User {
   isEmailVerified: boolean;
   contributions: number;
   createdAt: string;
+  contactNo?: string;
+  modRequest?: "pending" | "approved" | "rejected";
+  modMotivation?: string;
+  modRequestAt?: string;
 }
 
 interface ModRequest {
-  userId: User;
+  _id: string;
+  name: string;
+  email: string;
   contactNo: string;
   modMotivation: string;
   modRequestAt: string;
-  status: "pending" | "approved" | "rejected";
+  role: string;
+  isActive: boolean;
+  contributions: number;
 }
 
 interface AdminState {
@@ -69,7 +78,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     try {
       const res = await getAllUsers();
       set({ users: res.users, isLoading: false });
-    } catch (err: Error) {
+    } catch (err: any) {
       set({ isLoading: false, error: err.message || "Failed to fetch users" });
     }
   },
@@ -79,8 +88,11 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     try {
       const res = await getActiveUsers();
       set({ activeUsers: res.users || [], isLoading: false });
-    } catch (err: Error) {
-      set({ isLoading: false, error: err.message || "Failed to fetch active users" });
+    } catch (err: any) {
+      set({
+        isLoading: false,
+        error: err.message || "Failed to fetch active users",
+      });
     }
   },
 
@@ -89,8 +101,11 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     try {
       const res = await getInactiveUsers();
       set({ inactiveUsers: res.users || [], isLoading: false });
-    } catch (err: Error) {
-      set({ isLoading: false, error: err.message || "Failed to fetch inactive users" });
+    } catch (err: any) {
+      set({
+        isLoading: false,
+        error: err.message || "Failed to fetch inactive users",
+      });
     }
   },
 
@@ -99,7 +114,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     try {
       const res = await getAllMods();
       set({ mods: res.mods, isLoading: false });
-    } catch (err: Error) {
+    } catch (err: any) {
       set({ isLoading: false, error: err.message || "Failed to fetch mods" });
     }
   },
@@ -108,9 +123,9 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await getModRequests();
-      // Assuming response structure, adjust based on actual API return
-      set({ modRequests: res.requests || [], isLoading: false });
-    } catch (err: Error) {
+      // Backend returns { success: true, mods: [...] } for mod requests
+      set({ modRequests: res.mods || [], isLoading: false });
+    } catch (err: any) {
       set({
         isLoading: false,
         error: err.message || "Failed to fetch requests",
@@ -121,13 +136,13 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   deactivateUser: async (userId: string) => {
     try {
       await deactivateUser(userId);
-      // Optimistic update
       const updatedUsers = get().users.map((u) =>
         u._id === userId ? { ...u, isActive: false } : u
       );
       set({ users: updatedUsers });
-    } catch (err: Error) {
+    } catch (err: any) {
       console.error("Failed to deactivate user", err);
+      throw err;
     }
   },
 
@@ -138,8 +153,9 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         u._id === userId ? { ...u, isActive: true } : u
       );
       set({ users: updatedUsers });
-    } catch (err: Error) {
+    } catch (err: any) {
       console.error("Failed to activate user", err);
+      throw err;
     }
   },
 
@@ -148,36 +164,37 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       await deleteUser(userId);
       const updatedUsers = get().users.filter((u) => u._id !== userId);
       set({ users: updatedUsers });
-    } catch (err: Error) {
+    } catch (err: any) {
       console.error("Failed to delete user", err);
+      throw err;
     }
   },
 
   processModRequest: async (userId: string, action) => {
     try {
       await reviewModRequest(userId, action);
-      // Check if backend returns the _id of the request or the user.
-      // Here assuming we remove by User ID from the request list locally
       const updatedRequests = get().modRequests.filter(
-        (req) => req.userId._id !== userId
+        (req) => req._id !== userId
       );
       set({ modRequests: updatedRequests });
 
-      // Refresh mods list if approved
       if (action === "approve") {
         get().fetchMods();
       }
-    } catch (err: Error) {
+    } catch (err: any) {
       console.error("Failed to process request", err);
+      throw err;
     }
   },
 
   removeModRole: async (userId: string) => {
     try {
+      await removeModRole(userId);
       const updatedMods = get().mods.filter((m) => m._id !== userId);
       set({ mods: updatedMods });
-    } catch (err: Error) {
+    } catch (err: any) {
       console.error("Failed to remove mod role", err);
+      throw err;
     }
   },
 }));

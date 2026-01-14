@@ -10,21 +10,26 @@ import {
   approveSyllabus,
   rejectSyllabus,
 } from "@/lib/api/mod.api";
-
-// Reusing types from crud.api.ts but adding 'user' field if populated by backend
-interface Note {
-  _id: string;
-  title: string;
-  // ... add fields as needed
-  user?: { name: string; email: string };
-  createdAt?: string;
-}
+import { toast } from "react-hot-toast";
 
 // Simplified generic interface for pending items
 interface PendingItem {
   _id: string;
   title: string;
-  type: "note" | "pyq" | "syllabus";
+  courseCode?: string;
+  courseName?: string;
+  program?: string;
+  semester?: string | number;
+  year?: string;
+  fileUrl?: string;
+  userId?: {
+    _id: string;
+    name?: string;
+    username?: string;
+    email?: string;
+  };
+  createdAt?: string;
+  status?: string;
   [key: string]: any;
 }
 
@@ -36,7 +41,6 @@ interface ModState {
   error: string | null;
 
   fetchPendingContent: () => Promise<void>;
-
   approveItem: (id: string, type: "note" | "pyq" | "syllabus") => Promise<void>;
   rejectItem: (id: string, type: "note" | "pyq" | "syllabus") => Promise<void>;
 }
@@ -52,9 +56,18 @@ export const useModStore = create<ModState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const [notesRes, pyqsRes, syllabusRes] = await Promise.all([
-        getPendingNotes(),
-        getPendingPyqs(),
-        getPendingSyllabus(),
+        getPendingNotes().catch((err) => {
+          console.error("Error fetching pending notes:", err);
+          return { notes: [] };
+        }),
+        getPendingPyqs().catch((err) => {
+          console.error("Error fetching pending pyqs:", err);
+          return { pyqs: [] };
+        }),
+        getPendingSyllabus().catch((err) => {
+          console.error("Error fetching pending syllabus:", err);
+          return { syllabus: [] };
+        }),
       ]);
 
       set({
@@ -64,14 +77,20 @@ export const useModStore = create<ModState>((set, get) => ({
         isLoading: false,
       });
     } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message ||
+        err.message ||
+        "Failed to fetch pending content";
       set({
         isLoading: false,
-        error: err.message || "Failed to fetch pending content",
+        error: errorMessage,
       });
+      toast.error(errorMessage);
     }
   },
 
   approveItem: async (id, type) => {
+    set({ error: null });
     try {
       if (type === "note") {
         await approveNote(id);
@@ -90,31 +109,50 @@ export const useModStore = create<ModState>((set, get) => ({
         }));
       }
     } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message ||
+        err.message ||
+        `Failed to approve ${type}`;
+      set({ error: errorMessage });
       console.error(`Failed to approve ${type}`, err);
-      // Optionally set error state
+      throw new Error(errorMessage);
     }
   },
 
   rejectItem: async (id, type) => {
+    set({ error: null });
     try {
+      // Prompt for rejection reason
+      const rejectionReason = prompt("Please provide a reason for rejection:");
+      if (!rejectionReason || rejectionReason.trim() === "") {
+        toast.error("Rejection reason is required");
+        return;
+      }
+
       if (type === "note") {
-        await rejectNote(id);
+        await rejectNote(id, rejectionReason);
         set((s) => ({
           pendingNotes: s.pendingNotes.filter((i) => i._id !== id),
         }));
       } else if (type === "pyq") {
-        await rejectPyq(id);
+        await rejectPyq(id, rejectionReason);
         set((s) => ({
           pendingPyqs: s.pendingPyqs.filter((i) => i._id !== id),
         }));
       } else if (type === "syllabus") {
-        await rejectSyllabus(id);
+        await rejectSyllabus(id, rejectionReason);
         set((s) => ({
           pendingSyllabus: s.pendingSyllabus.filter((i) => i._id !== id),
         }));
       }
     } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message ||
+        err.message ||
+        `Failed to reject ${type}`;
+      set({ error: errorMessage });
       console.error(`Failed to reject ${type}`, err);
+      throw new Error(errorMessage);
     }
   },
 }));

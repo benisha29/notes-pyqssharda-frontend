@@ -102,25 +102,32 @@ export default function ModRequestForm({
   // If user has pending request
   if (hasPendingRequest) {
     return (
-      <div className="w-full max-w-md mx-auto bg-white p-8 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <div className="text-center">
-          <div className="text-6xl mb-4">⏳</div>
-          <h2 className="text-2xl font-black text-black mb-4">
+      <div className="w-full max-w-md mx-auto bg-white p-8 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute -top-10 -right-10 w-24 h-24 bg-yellow-300 rounded-full opacity-50 blur-xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-purple-300 rounded-full opacity-50 blur-xl"></div>
+
+        <div className="text-center relative z-10">
+          <div className="text-6xl mb-4 animate-bounce">⏳</div>
+          <h2 className="text-3xl font-black text-black mb-4">
             Request Pending
           </h2>
-          <p className="text-gray-600 mb-2">
-            Your moderator request is currently under review by our admin team.
-          </p>
-          <p className="text-sm text-gray-500 mb-6">
-            Submitted on:{" "}
-            {user?.modRequestAt
-              ? new Date(user.modRequestAt).toLocaleDateString()
-              : "Recently"}
-          </p>
+          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 mb-6">
+            <p className="text-gray-800 font-medium mb-2">
+              Your moderator request is currently under review by our admin
+              team.
+            </p>
+            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">
+              Submitted on:{" "}
+              {user?.modRequestAt
+                ? new Date(user.modRequestAt).toLocaleDateString()
+                : "Recently"}
+            </p>
+          </div>
           {onClose && (
             <button
               onClick={onClose}
-              className="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded-lg transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
+              className="w-full bg-black hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] hover:translate-y-[2px] active:scale-[0.98] ring-2 ring-black"
             >
               Close
             </button>
@@ -131,16 +138,24 @@ export default function ModRequestForm({
   }
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white p-8 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-black text-black flex items-center gap-2">
-          <span className="w-4 h-4 rounded-full border-2 border-black bg-[#C084FC]"></span>
-          Become a Moderator
+    <div className="w-full max-w-md mx-auto bg-white p-8 rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-bl-full -z-0"></div>
+
+      <div className="flex justify-between items-center mb-8 relative z-10">
+        <h2 className="text-2xl font-black text-black flex items-center gap-3">
+          <span className="w-8 h-8 rounded-lg border-2 border-black bg-[#C084FC] flex items-center justify-center text-white text-sm">
+            👑
+          </span>
+          <span className="leading-tight">
+            Become a<br />
+            Moderator
+          </span>
         </h2>
         {onClose && (
           <button
             onClick={onClose}
-            className="text-black hover:text-gray-600 transition-colors font-bold text-xl"
+            className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center bg-gray-100 hover:bg-red-100 transition-colors font-bold"
           >
             ✕
           </button>
@@ -148,83 +163,97 @@ export default function ModRequestForm({
       </div>
 
       {wasRejected && (
-        <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-          <p className="text-sm font-bold text-yellow-800">
-            Your previous request was not approved. You can submit a new request
-            with updated information.
+        <div className="mb-6 p-4 bg-red-50 border-2 border-red-300 rounded-xl">
+          <p className="text-sm font-bold text-red-800">
+            ⚠️ Your previous request was not approved. You can submit a new
+            request with updated information.
           </p>
         </div>
       )}
 
-      <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
-        <p className="text-sm font-bold text-blue-900 mb-2">
-          📋 Moderator Responsibilities:
+      <div className="mb-6 p-5 bg-blue-50 border-2 border-blue-200 rounded-xl relative z-10">
+        <p className="text-sm font-black text-blue-900 mb-3 uppercase tracking-wide">
+          📋 Responsibilities:
         </p>
-        <ul className="text-xs text-blue-800 space-y-1">
-          <li>
-            • Review and approve/reject uploaded notes, PYQs, and syllabus
+        <ul className="text-sm text-blue-800 space-y-2 font-medium">
+          <li className="flex items-start gap-2">
+            <span className="text-blue-500 mt-0.5">●</span>
+            Review and approve uploaded resources
           </li>
-          <li>• Ensure content quality and relevance</li>
-          <li>• Help maintain library standards</li>
-          <li>• Be active and responsive</li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-500 mt-0.5">●</span>
+            Ensure content quality standards
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-500 mt-0.5">●</span>
+            Help maintain library integrity
+          </li>
         </ul>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
         {/* Contact Number */}
         <div>
-          <label className="block text-sm font-bold text-black mb-1">
-            Contact Number *
+          <label className="block text-sm font-bold text-black mb-1.5 uppercase tracking-wide">
+            Contact Number <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
             name="contactNo"
             value={formData.contactNo}
             onChange={handleChange}
-            placeholder="e.g., +91 9876543210"
-            className="w-full px-4 py-2 rounded-lg border-2 border-black focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] outline-none transition-all text-sm font-medium text-black placeholder:text-gray-500"
+            placeholder="+91 9876543210"
+            className="w-full px-4 py-3 rounded-xl border-2 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all text-sm font-bold text-black placeholder:text-gray-400 bg-gray-50 focus:bg-white"
             required
           />
-          <p className="text-xs text-gray-500 mt-1">
-            We&apos;ll use this to contact you
-          </p>
         </div>
 
         {/* Motivation */}
         <div>
-          <label className="block text-sm font-bold text-black mb-1">
-            Why do you want to be a moderator? *
+          <label className="block text-sm font-bold text-black mb-1.5 uppercase tracking-wide">
+            Why you? <span className="text-red-500">*</span>
           </label>
           <textarea
             name="motivation"
             value={formData.motivation}
             onChange={handleChange}
             placeholder="Tell us why you'd be a great moderator (minimum 50 characters)..."
-            rows={5}
-            className="w-full px-4 py-2 rounded-lg border-2 border-black focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] outline-none transition-all text-sm font-medium text-black placeholder:text-gray-500 resize-none"
+            rows={4}
+            className="w-full px-4 py-3 rounded-xl border-2 border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:-translate-y-1 outline-none transition-all text-sm font-medium text-black placeholder:text-gray-400 bg-gray-50 focus:bg-white resize-none"
             required
           />
-          <p className="text-xs text-gray-500 mt-1">
-            {formData.motivation.length}/50 characters minimum
-          </p>
+          <div className="flex justify-end mt-1">
+            <span
+              className={`text-xs font-bold ${
+                formData.motivation.length < 50
+                  ? "text-orange-500"
+                  : "text-green-600"
+              }`}
+            >
+              {formData.motivation.length}/50 chars
+            </span>
+          </div>
         </div>
 
         {/* Current Contributions Info */}
-        <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
-          <p className="text-sm font-bold text-green-900">
-            Your Contributions: {user?.contributions || 0}
-          </p>
-          <p className="text-xs text-green-700 mt-1">
-            Active contributors are more likely to be approved!
-          </p>
+        <div className="px-4 py-3 bg-green-50 border-2 border-dashed border-green-300 rounded-xl flex justify-between items-center">
+          <div>
+            <p className="text-xs font-bold text-green-900 uppercase">
+              Your Contributions
+            </p>
+            <p className="text-xs text-green-700">Active users preferred</p>
+          </div>
+          <span className="text-2xl font-black text-green-600">
+            {user?.contributions || 0}
+          </span>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-6 bg-black hover:bg-gray-800 text-white font-bold py-3 rounded-lg transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] disabled:opacity-70 disabled:cursor-not-allowed border-2 border-transparent hover:border-black"
+          className="w-full mt-2 bg-black hover:bg-gray-800 text-white font-black py-4 rounded-xl transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] active:translate-y-[1px] active:shadow-none disabled:opacity-70 disabled:cursor-not-allowed border-2 border-transparent"
         >
-          {loading ? "Submitting..." : "Submit Request"}
+          {loading ? "Submitting Request..." : "Submit Application 🚀"}
         </button>
       </form>
     </div>

@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import {
   Pyq,
+  PyqSearchParams,
   getAllPyqs,
+  getRecentPyqs,
   searchPyqs,
   getMyPyqs,
   createPyq,
@@ -13,15 +15,20 @@ import { getErrorMessage } from "../lib/utils/errorHandler";
 interface PYQsStore {
   myPyqs: Pyq[];
   allPyqs: Pyq[];
+  recentPyqs: Pyq[];
+  searchResults: Pyq[];
   isLoading: boolean;
   error: string | null;
+  lastSearchParams: PyqSearchParams | null;
 
   fetchPYQs: () => Promise<void>;
   fetchAllPyqs: () => Promise<void>;
-  searchPyqs: (query: string) => Promise<void>;
+  fetchRecentPyqs: (limit?: number) => Promise<void>;
+  searchPyqs: (params: PyqSearchParams) => Promise<void>;
   addPYQ: (data: FormData) => Promise<void>;
   editPYQ: (id: string, data: FormData) => Promise<void>;
   removePYQ: (id: string) => Promise<void>;
+  clearSearchResults: () => void;
   clearError: () => void;
   resetStore: () => void;
 }
@@ -29,8 +36,11 @@ interface PYQsStore {
 export const usePYQsStore = create<PYQsStore>((set) => ({
   myPyqs: [],
   allPyqs: [],
+  recentPyqs: [],
+  searchResults: [],
   isLoading: false,
   error: null,
+  lastSearchParams: null,
 
   fetchPYQs: async () => {
     set({ isLoading: true, error: null });
@@ -39,7 +49,11 @@ export const usePYQsStore = create<PYQsStore>((set) => ({
       const pyqs = res.pyqs || [];
       set({ myPyqs: pyqs, isLoading: false });
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to fetch PYQs", isLoading: false, myPyqs: [] });
+      set({
+        error: getErrorMessage(error) || "Failed to fetch PYQs",
+        isLoading: false,
+        myPyqs: [],
+      });
     }
   },
 
@@ -50,18 +64,39 @@ export const usePYQsStore = create<PYQsStore>((set) => ({
       const pyqs = res.pyqs || [];
       set({ allPyqs: pyqs, isLoading: false });
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to fetch all PYQs", allPyqs: [], isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to fetch all PYQs",
+        allPyqs: [],
+        isLoading: false,
+      });
     }
   },
 
-  searchPyqs: async (query: string) => {
+  fetchRecentPyqs: async (limit = 10) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await searchPyqs(query);
+      const res = await getRecentPyqs(limit);
       const pyqs = res.pyqs || [];
-      set({ allPyqs: pyqs, isLoading: false });
+      set({ recentPyqs: pyqs, isLoading: false });
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Search failed", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to fetch recent PYQs",
+        isLoading: false,
+      });
+    }
+  },
+
+  searchPyqs: async (params: PyqSearchParams) => {
+    set({ isLoading: true, error: null, lastSearchParams: params });
+    try {
+      const res = await searchPyqs(params);
+      const pyqs = res.pyqs || [];
+      set({ searchResults: pyqs, isLoading: false });
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error) || "Search failed",
+        isLoading: false,
+      });
     }
   },
 
@@ -72,7 +107,10 @@ export const usePYQsStore = create<PYQsStore>((set) => ({
       const newPyq = res.pyq;
       set((state) => ({ myPyqs: [newPyq, ...state.myPyqs], isLoading: false }));
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to add PYQ", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to add PYQ",
+        isLoading: false,
+      });
       throw error;
     }
   },
@@ -85,10 +123,19 @@ export const usePYQsStore = create<PYQsStore>((set) => ({
       set((state) => ({
         myPyqs: state.myPyqs.map((p) => (p._id === id ? updatedPyq : p)),
         allPyqs: state.allPyqs.map((p) => (p._id === id ? updatedPyq : p)),
+        recentPyqs: state.recentPyqs.map((p) =>
+          p._id === id ? updatedPyq : p
+        ),
+        searchResults: state.searchResults.map((p) =>
+          p._id === id ? updatedPyq : p
+        ),
         isLoading: false,
       }));
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to update PYQ", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to update PYQ",
+        isLoading: false,
+      });
       throw error;
     }
   },
@@ -100,15 +147,29 @@ export const usePYQsStore = create<PYQsStore>((set) => ({
       set((state) => ({
         myPyqs: state.myPyqs.filter((p) => p._id !== id),
         allPyqs: state.allPyqs.filter((p) => p._id !== id),
+        recentPyqs: state.recentPyqs.filter((p) => p._id !== id),
+        searchResults: state.searchResults.filter((p) => p._id !== id),
         isLoading: false,
       }));
     } catch (error: unknown) {
-      set({ error: getErrorMessage(error) || "Failed to delete PYQ", isLoading: false });
+      set({
+        error: getErrorMessage(error) || "Failed to delete PYQ",
+        isLoading: false,
+      });
       throw error;
     }
   },
 
+  clearSearchResults: () => set({ searchResults: [], lastSearchParams: null }),
   clearError: () => set({ error: null }),
-  resetStore: () => set({ myPyqs: [], allPyqs: [], isLoading: false, error: null }),
+  resetStore: () =>
+    set({
+      myPyqs: [],
+      allPyqs: [],
+      recentPyqs: [],
+      searchResults: [],
+      isLoading: false,
+      error: null,
+      lastSearchParams: null,
+    }),
 }));
-

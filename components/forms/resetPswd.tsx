@@ -80,7 +80,7 @@ const ResetPasswordForm = () => {
         confirmNewPassword: "",
       });
 
-      router.push("/login");
+      router.push("/auth/login");
     } catch (error: unknown) {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response

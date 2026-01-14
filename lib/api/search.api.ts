@@ -21,10 +21,12 @@ export interface SearchResult {
   year: string;
   semester: string;
   resourceType?: string; // To identify which model this came from
-  uploadedBy?: {
-    _id: string;
-    username: string;
-  };
+  userId?:
+    | {
+        _id: string;
+        username: string;
+      }
+    | string;
   createdAt?: string;
   // Additional fields from specific resources
   noteType?: string;
