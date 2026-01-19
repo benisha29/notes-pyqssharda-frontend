@@ -88,7 +88,7 @@ export default function PyqsPage() {
 
   const handleSelect = (
     type: "program" | "year" | "semester",
-    value: string
+    value: string,
   ) => {
     if (type === "program") setSelectedProgram(value);
     if (type === "year") setSelectedYear(value);
@@ -396,7 +396,7 @@ export default function PyqsPage() {
                       <span>
                         By{" "}
                         {pyq.userId && typeof pyq.userId === "object"
-                          ? pyq.userId.username || pyq.userId.name || "User"
+                          ? pyq.userId.username || "User"
                           : "User"}
                       </span>
                     </div>

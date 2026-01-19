@@ -88,7 +88,7 @@ export default function NotesPage() {
 
   const handleSelect = (
     type: "program" | "year" | "semester",
-    value: string
+    value: string,
   ) => {
     if (type === "program") setSelectedProgram(value);
     if (type === "year") setSelectedYear(value);
@@ -360,7 +360,7 @@ export default function NotesPage() {
                       <span>
                         By{" "}
                         {note.userId && typeof note.userId === "object"
-                          ? note.userId.username || note.userId.name || "User"
+                          ? note.userId.username || "User"
                           : "User"}
                       </span>
                     </div>

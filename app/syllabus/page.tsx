@@ -88,7 +88,7 @@ export default function SyllabusPage() {
 
   const handleSelect = (
     type: "program" | "year" | "semester",
-    value: string
+    value: string,
   ) => {
     if (type === "program") setSelectedProgram(value);
     if (type === "year") setSelectedYear(value);
@@ -360,9 +360,7 @@ export default function SyllabusPage() {
                       <span>
                         By{" "}
                         {syllabus.userId && typeof syllabus.userId === "object"
-                          ? syllabus.userId.username ||
-                            syllabus.userId.name ||
-                            "User"
+                          ? syllabus.userId.username || "User"
                           : "User"}
                       </span>
                     </div>

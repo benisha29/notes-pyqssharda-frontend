@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { Syllabus } from "@/lib/api/crud.api";
+import { Syllabus } from "@/lib/api/syllabus.api";
 import { useSyllabusStore } from "@/stores/syllabus.store";
+
 
 interface SyllabusFormProps {
   onClose?: () => void;
@@ -34,7 +35,7 @@ export default function SyllabusForm({
         program: initialData.program,
         courseCode: initialData.courseCode,
         courseName: initialData.courseName,
-        semester: initialData.semester,
+        semester: String(initialData.semester),
       });
     }
   }, [initialData]);

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { Note } from "@/lib/api/crud.api";
+import { Note } from "@/lib/api/notes.api";
 import { useNotesStore } from "@/stores/notes.store";
 
 interface NotesFormProps {
@@ -55,7 +55,7 @@ export default function NotesForm({
   ];
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -141,7 +141,7 @@ export default function NotesForm({
       if (onClose) onClose();
     } catch (error) {
       toast.error(
-        initialData ? "Failed to update notes." : "Failed to upload notes."
+        initialData ? "Failed to update notes." : "Failed to upload notes.",
       );
     } finally {
       setLoading(false);
@@ -295,8 +295,8 @@ export default function NotesForm({
               ? "Updating..."
               : "Uploading..."
             : initialData
-            ? "Update Notes"
-            : "Upload Notes"}
+              ? "Update Notes"
+              : "Upload Notes"}
         </button>
       </form>
     </div>

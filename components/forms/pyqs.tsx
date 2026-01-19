@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-// import { Pyq } from "@/lib/api/crud.api";
+import { Pyq } from "@/lib/api/pyqs.api"
 import { usePYQsStore } from "@/stores/pyqs.store";
 
 interface PyqsFormProps {
@@ -35,7 +35,7 @@ export default function PyqsForm({
         program: initialData.program,
         courseCode: initialData.courseCode,
         courseName: initialData.courseName,
-        semester: initialData.semester,
+        semester: String(initialData.semester),
         year: initialData.year,
       });
     }
