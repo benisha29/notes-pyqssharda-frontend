@@ -10,7 +10,11 @@ import { useNotesStore } from "@/stores/notes.store";
 import { usePYQsStore } from "@/stores/pyqs.store";
 import { useSyllabusStore } from "@/stores/syllabus.store";
 
-export default function DashboardPage() {
+export default function DashboardPage({
+  isEmbedded = false,
+}: {
+  isEmbedded?: boolean;
+}) {
   const { user } = useAuthStore();
   const {
     myNotes,
@@ -48,7 +52,7 @@ export default function DashboardPage() {
 
   const handleDelete = async (
     type: "note" | "pyq" | "syllabus",
-    id: string
+    id: string,
   ) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
@@ -75,7 +79,11 @@ export default function DashboardPage() {
   const totalContributions = myNotes.length + myPyqs.length + mySyllabus.length;
 
   return (
-    <div className="min-h-screen bg-[#F2F4F8] p-8 font-sans">
+    <div
+      className={
+        isEmbedded ? "font-sans" : "min-h-screen bg-[#F2F4F8] p-8 font-sans"
+      }
+    >
       {/* Header Section */}
       <div className="max-w-7xl mx-auto mb-12 animate-fade-in-up">
         <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl p-8 mb-8">

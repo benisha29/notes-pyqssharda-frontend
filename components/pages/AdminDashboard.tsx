@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import useAuthStore from "@/stores/authStore";
 import ModDashboard from "./ModDashboard";
 import DashboardPage from "./DashboardPage";
+import { FaUserShield, FaUserTie, FaUser } from "react-icons/fa";
 
 type DashboardView = "admin" | "moderator" | "user";
 
@@ -89,7 +90,7 @@ export default function AdminDashboard() {
   const handleDeleteUser = async (id: string) => {
     if (
       !confirm(
-        "⚠️ This will permanently delete the user and all their data. This action cannot be undone. Are you sure?"
+        "⚠️ This will permanently delete the user and all their data. This action cannot be undone. Are you sure?",
       )
     )
       return;
@@ -105,26 +106,26 @@ export default function AdminDashboard() {
   // Render different views based on currentView
   if (currentView === "moderator") {
     return (
-      <div className="min-h-screen bg-[#F2F4F8]">
+      <div className="min-h-screen bg-[#F2F4F8] p-4 md:p-8 font-sans">
         <ViewSwitcher
           currentView={currentView}
           onViewChange={setCurrentView}
           userName={user?.name}
         />
-        <ModDashboard />
+        <ModDashboard isViewedByAdmin={true} isEmbedded={true} />
       </div>
     );
   }
 
   if (currentView === "user") {
     return (
-      <div className="min-h-screen bg-[#F2F4F8]">
+      <div className="min-h-screen bg-[#F2F4F8] p-4 md:p-8 font-sans">
         <ViewSwitcher
           currentView={currentView}
           onViewChange={setCurrentView}
           userName={user?.name}
         />
-        <DashboardPage />
+        <DashboardPage isEmbedded={true} />
       </div>
     );
   }
@@ -239,48 +240,52 @@ function ViewSwitcher({
   userName?: string;
 }) {
   return (
-    <div className="max-w-7xl mx-auto mb-6 p-4">
-      <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl p-4">
+    <div className="max-w-7xl mx-auto mb-8">
+      <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl p-6 md:p-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-black text-black">
-              👑 Admin Controls - {userName || "Admin"}
+          <div className="flex-1">
+            <h2 className="text-xl md:text-2xl font-black text-black flex items-center gap-2">
+              <FaUserTie className="w-5 h-5" />
+              Admin Controls - {userName || "Admin"}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 mt-1">
               Switch between different role views
             </p>
           </div>
 
-          <div className="flex gap-2 flex-wrap justify-center">
+          <div className="flex gap-3 flex-wrap justify-center md:justify-end">
             <button
               onClick={() => onViewChange("admin")}
-              className={`px-4 py-2 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
                 currentView === "admin"
                   ? "bg-purple-400 text-white"
                   : "bg-purple-100 text-black"
               }`}
             >
-              👑 Admin View
+              <FaUserTie className="w-4 h-4" />
+              Admin View
             </button>
             <button
               onClick={() => onViewChange("moderator")}
-              className={`px-4 py-2 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
                 currentView === "moderator"
                   ? "bg-orange-400 text-white"
                   : "bg-orange-100 text-black"
               }`}
             >
-              ⭐ Moderator View
+              <FaUserShield className="w-4 h-4" />
+              Moderator View
             </button>
             <button
               onClick={() => onViewChange("user")}
-              className={`px-4 py-2 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
                 currentView === "user"
                   ? "bg-blue-400 text-white"
                   : "bg-blue-100 text-black"
               }`}
             >
-              👤 User View
+              <FaUser className="w-4 h-4" />
+              User View
             </button>
           </div>
         </div>

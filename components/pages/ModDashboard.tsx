@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import useAuthStore from "@/stores/authStore";
 import DashboardPage from "./DashboardPage";
 import RejectionModal from "@/components/modals/RejectionModal";
+import { FaUserShield, FaUser } from "react-icons/fa";
 
 type DashboardView = "moderator" | "user";
 
@@ -16,7 +17,13 @@ interface RejectionModalState {
   itemTitle: string;
 }
 
-export default function ModDashboard() {
+export default function ModDashboard({
+  isViewedByAdmin = false,
+  isEmbedded = false,
+}: {
+  isViewedByAdmin?: boolean;
+  isEmbedded?: boolean;
+}) {
   const { user } = useAuthStore();
   const [currentView, setCurrentView] = useState<DashboardView>("moderator");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +54,7 @@ export default function ModDashboard() {
     id: string,
     type: "note" | "pyq" | "syllabus",
     action: "approve" | "reject",
-    title?: string
+    title?: string,
   ) => {
     if (action === "reject") {
       // Open rejection modal
@@ -76,7 +83,7 @@ export default function ModDashboard() {
       await rejectItem(
         rejectionModal.itemId,
         rejectionModal.itemType,
-        rejectionReason
+        rejectionReason,
       );
       toast.success("Item rejected successfully");
       setRejectionModal({
@@ -111,26 +118,36 @@ export default function ModDashboard() {
   // Render User View
   if (currentView === "user") {
     return (
-      <div className="min-h-screen bg-[#F2F4F8]">
-        <ViewSwitcher
-          currentView={currentView}
-          onViewChange={setCurrentView}
-          userName={user?.name}
-        />
-        <DashboardPage />
+      <div className="min-h-screen bg-[#F2F4F8] p-4 md:p-8 font-sans">
+        {!isViewedByAdmin && (
+          <ViewSwitcher
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            userName={user?.name}
+          />
+        )}
+        <DashboardPage isEmbedded={true} />
       </div>
     );
   }
 
   // Render Moderator View (default)
   return (
-    <div className="min-h-screen bg-[#F2F4F8] p-4 md:p-8 font-sans">
+    <div
+      className={
+        isEmbedded
+          ? "font-sans"
+          : "min-h-screen bg-[#F2F4F8] p-4 md:p-8 font-sans"
+      }
+    >
       {/* View Switcher */}
-      <ViewSwitcher
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        userName={user?.name}
-      />
+      {!isViewedByAdmin && (
+        <ViewSwitcher
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          userName={user?.name}
+        />
+      )}
 
       {/* Header Section */}
       <div className="max-w-7xl mx-auto mb-8 animate-fade-in-up">
@@ -232,38 +249,41 @@ function ViewSwitcher({
   userName?: string;
 }) {
   return (
-    <div className="max-w-7xl mx-auto mb-6 p-4">
-      <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl p-4">
+    <div className="max-w-7xl mx-auto mb-8">
+      <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl p-6 md:p-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-black text-black">
-              ⭐ Moderator Controls - {userName || "Moderator"}
+          <div className="flex-1">
+            <h2 className="text-xl md:text-2xl font-black text-black flex items-center gap-2">
+              <FaUserShield className="w-5 h-5" />
+              Moderator Controls - {userName || "Moderator"}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 mt-1">
               Switch between moderator and user views
             </p>
           </div>
 
-          <div className="flex gap-2 flex-wrap justify-center">
+          <div className="flex gap-3 flex-wrap justify-center md:justify-end">
             <button
               onClick={() => onViewChange("moderator")}
-              className={`px-4 py-2 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
                 currentView === "moderator"
-                  ? "bg-purple-400 text-white"
-                  : "bg-purple-100 text-black"
+                  ? "bg-orange-400 text-white"
+                  : "bg-orange-100 text-black"
               }`}
             >
-              ⭐ Moderator View
+              <FaUserShield className="w-4 h-4" />
+              Moderator View
             </button>
             <button
               onClick={() => onViewChange("user")}
-              className={`px-4 py-2 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold border-2 border-black rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none ${
                 currentView === "user"
                   ? "bg-blue-400 text-white"
                   : "bg-blue-100 text-black"
               }`}
             >
-              👤 User View
+              <FaUser className="w-4 h-4" />
+              User View
             </button>
           </div>
         </div>
