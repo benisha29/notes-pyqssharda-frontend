@@ -56,23 +56,32 @@ export default function SearchComponent({
 
     setIsSearching(true);
     try {
-      // Build search query with filters
-      let query = searchQuery;
-      if (selectedProgram) query += ` program:${selectedProgram}`;
-      if (selectedSemester) query += ` semester:${selectedSemester}`;
-      if (courseCode) query += ` code:${courseCode}`;
-
       let searchResults: any[] = [];
 
       if (selectedType === "notes") {
-        await searchNotes(query);
+        await searchNotes({
+          query: searchQuery,
+          program: selectedProgram || undefined,
+          semester: selectedSemester || undefined,
+          courseCode: courseCode || undefined,
+        });
         // Get results from store after search
         searchResults = []; // You'll need to expose search results in store
       } else if (selectedType === "pyqs") {
-        await searchPyqs(query);
+        await searchPyqs({
+          query: searchQuery,
+          program: selectedProgram || undefined,
+          semester: selectedSemester || undefined,
+          courseCode: courseCode || undefined,
+        });
         searchResults = [];
       } else {
-        await searchSyllabus(query);
+        await searchSyllabus({
+          query: searchQuery,
+          program: selectedProgram || undefined,
+          semester: selectedSemester || undefined,
+          courseCode: courseCode || undefined,
+        });
         searchResults = [];
       }
 

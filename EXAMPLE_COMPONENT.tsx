@@ -47,7 +47,7 @@ export default function NotesPage() {
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
-      await searchNotes(query);
+      await searchNotes({ query });
     } else {
       await fetchAllNotes();
     }
@@ -147,9 +147,13 @@ export default function NotesPage() {
 
               {/* Approval Status Badge */}
               <div className="mb-4">
-                {note.isApproved ? (
+                {note.status === "approved" ? (
                   <span className="inline-block px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
                     ✓ Approved
+                  </span>
+                ) : note.status === "rejected" ? (
+                  <span className="inline-block px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
+                    ✗ Rejected
                   </span>
                 ) : (
                   <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">

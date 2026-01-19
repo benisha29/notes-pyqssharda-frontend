@@ -34,7 +34,7 @@ export default function NotesForm({
         program: initialData.program,
         courseCode: initialData.courseCode,
         courseName: initialData.courseName,
-        semester: initialData.semester,
+        semester: String(initialData.semester),
       });
     }
   }, [initialData]);
@@ -110,17 +110,17 @@ export default function NotesForm({
 
     try {
       if (initialData) {
-        // For update, send JSON object (backend expects req.body fields)
-        await editNote(initialData._id, {
-          ...initialData,
-          title: formData.title,
-          program: formData.program,
-          courseCode: formData.courseCode,
-          courseName: formData.courseName,
-          semester: formData.semester,
-          // Keep existing fileUrl if no new file, or handle file upload separately
-          fileUrl: initialData.fileUrl,
-        });
+        // For update, use FormData (backend expects multipart/form-data)
+        const data = new FormData();
+        data.append("title", formData.title.trim());
+        data.append("program", formData.program);
+        data.append("courseCode", formData.courseCode.trim().toUpperCase());
+        data.append("courseName", formData.courseName.trim());
+        data.append("semester", semester); // Send as string, backend will handle conversion
+        if (file) {
+          data.append("file", file);
+        }
+        await editNote(initialData._id, data);
         toast.success("Notes updated successfully!");
       } else {
         // For create, use FormData (file upload)

@@ -70,8 +70,8 @@ export default function ModDashboard({
         await approveItem(id, type);
         toast.success("Item approved successfully");
         await fetchPendingContent();
-      } catch (error: any) {
-        toast.error(error?.message || "Failed to approve item");
+      } catch (error: unknown) {
+        toast.error((error as any)?.message || "Failed to approve item");
         console.error("Approval error:", error);
       }
     }
@@ -93,8 +93,8 @@ export default function ModDashboard({
         itemTitle: "",
       });
       await fetchPendingContent();
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to reject item");
+    } catch (error: unknown) {
+      toast.error((error as any)?.message || "Failed to reject item");
       console.error("Rejection error:", error);
     } finally {
       setIsSubmitting(false);
