@@ -369,7 +369,7 @@ function ModSection({
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 flex-wrap">
                   {item.courseCode && (
-                    <div className="inline-block px-2 py-1 bg-gray-100 border border-black rounded-md text-xs font-bold">
+                    <div className="inline-block px-2 py-1 bg-gray-100 border border-black rounded-md text-xs font-bold text-black">
                       {item.courseCode}
                     </div>
                   )}
@@ -386,7 +386,7 @@ function ModSection({
                 {item.userId?.email && (
                   <div className="text-xs text-gray-500">
                     Email:{" "}
-                    <span className="font-medium">{item.userId.email}</span>
+                    <span className="font-medium text-black">{item.userId.email}</span>
                   </div>
                 )}
               </div>
@@ -402,7 +402,7 @@ function ModSection({
                       href={item.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-black underline decoration-2 hover:text-purple-600 transition-colors"
+                      className="text-xs font-black underline decoration-2 hover:text-purple-600 transition-colors text-black"
                     >
                       VIEW FILE →
                     </a>

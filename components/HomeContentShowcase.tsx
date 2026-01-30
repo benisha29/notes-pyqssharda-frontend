@@ -124,7 +124,7 @@ export default function HomeContentShowcase() {
               </div>
 
               <div className="space-y-2 mb-3">
-                <div className="inline-block px-2 py-1 bg-gray-100 border border-black rounded-md text-xs font-bold mr-2">
+                <div className="inline-block px-2 py-1 bg-gray-100 border border-black rounded-md text-xs text-black font-bold mr-2">
                   {item.courseCode}
                 </div>
                 <span className="text-sm font-medium text-gray-600">
@@ -141,7 +141,7 @@ export default function HomeContentShowcase() {
                   href={item.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-black underline decoration-2 hover:text-blue-600 transition-colors"
+                  className="text-xs font-black underline decoration-2 hover:text-blue-600 transition-colors text-black"
                 >
                   VIEW FILE →
                 </a>

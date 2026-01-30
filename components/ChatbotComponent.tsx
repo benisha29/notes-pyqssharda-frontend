@@ -6,7 +6,7 @@ import { useChatbotStore, SUGGESTED_QUESTIONS } from "@/stores/chatbot.store";
 // Format message content with proper styling
 function formatMessage(content: string) {
   const lines = content.split("\n");
-  const elements: JSX.Element[] = [];
+  const elements: React.ReactNode[] = [];
 
   lines.forEach((line, idx) => {
     // Skip empty lines
