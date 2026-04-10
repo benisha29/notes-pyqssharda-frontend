@@ -7,8 +7,8 @@ const SYLLABUS4_DATA_2024_25 = [
     code: "CS201",
     credits: 3,
     semester: 4,
-        year: "2024-25",
-        src:"../../../public/Syllabus/BtechCS/4thsem/DBMS Syllabus 4th Sem.pdf"
+    year: "2024-25",
+    src: "/Syllabus/BtechCS/4thsem/DBMS Syllabus 4th Sem.pdf",
   },
   {
     subject: "Theory of Computation",
@@ -16,7 +16,7 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 4,
     semester: 4,
     year: "2024-25",
-    src:"../../../public/Syllabus/BtechCS/4thsem/TOC Syllabus 4th Sem.pdf"
+    src: "/Syllabus/BtechCS/4thsem/TOC Syllabus 4th Sem.pdf",
   },
   {
     subject: "Management for Engineers",
@@ -24,7 +24,7 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 4,
     semester: 4,
     year: "2024-25",
-    src:"../../../public/Syllabus/BtechCS/4thsem/HMM 305 MANAGEMENT FOR ENGINEERS 2024-25.pdf"
+    src: "/Syllabus/BtechCS/4thsem/HMM 305 MANAGEMENT FOR ENGINEERS 2024-25.pdf",
   },
   {
     subject: "Digital Forensics",
@@ -32,6 +32,8 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 2,
     semester: 4,
     year: "2024-25",
-    src:"../../../public/PYQs/BtechCS/4thsem/CSC 201 DIGITAL FORENSICS 2024-25.pdf"
+    src: "/PYQs/BtechCS/4thsem/CSC 201 DIGITAL FORENSICS 2024-25.pdf",
   },
 ];
+
+export default SYLLABUS4_DATA_2024_25;

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
+import PYQ2_DATA_2024_25 from "@/DATA/PYQs/BtechCS/2ndSem";
 import { PYQ4_DATA_2024_25 } from "@/DATA/PYQs/BtechCS/4thSem";
 
 // Define the type for a PYQ item based on the data structure
@@ -13,7 +14,7 @@ interface Pyq {
 }
 
 export default function PyqsPage() {
-  const allPyqs: Pyq[] = PYQ4_DATA_2024_25;
+  const allPyqs: Pyq[] = [...PYQ4_DATA_2024_25, ...PYQ2_DATA_2024_25];
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
@@ -56,6 +57,18 @@ export default function PyqsPage() {
     selectedYear,
     selectedSemester,
   ]);
+
+  const pyqsBySemester = useMemo(() => {
+    const grouped: Record<string, Pyq[]> = {};
+    filteredPyqs.forEach((pyq) => {
+      const semesterKey = `Semester ${pyq.semester}`;
+      if (!grouped[semesterKey]) {
+        grouped[semesterKey] = [];
+      }
+      grouped[semesterKey].push(pyq);
+    });
+    return grouped;
+  }, [filteredPyqs]);
 
   const handleClearFilters = () => {
     setSearchQuery("");
@@ -225,75 +238,39 @@ export default function PyqsPage() {
           </div>
         </div>
 
-        <div>
-          <div className="flex items-center gap-3 mb-8">
-            <h2 className="text-3xl font-black">
-              {hasActiveFilter ? "Search Results" : "4th Semester PYQs"}
-            </h2>
-            <span className="px-3 py-1 bg-black text-white rounded-full text-sm font-bold">
-              {filteredPyqs.length}
-            </span>
-          </div>
-
-          {filteredPyqs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPyqs.map((pyq, index) => (
-                <div
-                  key={index}
-                  className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col h-full"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="px-3 py-1 bg-orange-200 text-orange-900 border-2 border-black rounded-full text-xs font-bold uppercase tracking-wider">
-                      B.Tech CS
-                    </span>
-                    <span className="text-xs font-bold text-gray-400">
-                      Sem {pyq.semester}
+        {/* Results Section */}
+        {Object.keys(pyqsBySemester).length > 0 ? (
+          <div className="space-y-12">
+            {Object.entries(pyqsBySemester)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([semester, pyqs]) => (
+                <div key={semester}>
+                  <div className="flex items-center gap-4 mb-8">
+                    <h2 className="text-3xl font-black">
+                      {semester} PYQs
+                    </h2>
+                    <span className="bg-black text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">
+                      {pyqs.length}
                     </span>
                   </div>
-
-                  <div className="mb-4 flex-grow">
-                    <h3 className="text-xl font-black mb-2 line-clamp-2 leading-tight">
-                      {pyq.subject}
-                    </h3>
-                    <div className="space-y-1">
-                      <p className="text-sm font-bold text-gray-600 flex items-center gap-2">
-                        <span className="w-3 h-3 border border-black rounded-full bg-orange-400"></span>
-                        Credits: {pyq.credits}
-                      </p>
-                      <p className="text-sm font-mono text-gray-500 flex items-center gap-2 pl-0.5">
-                        {pyq.code}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="border-t-2 border-dashed border-gray-200 pt-4 mt-auto">
-                    <div className="flex items-center justify-between mb-4 text-xs font-bold text-gray-500">
-                      <span>{pyq.year}</span>
-                    </div>
-
-                    <a
-                      href={pyq.src}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full py-3 bg-black text-white rounded-lg font-black flex items-center justify-center gap-2 hover:bg-gray-800 transition-all border-2 border-transparent hover:border-black hover:bg-white hover:text-black active:translate-y-[1px]"
-                    >
-                      <DownloadIcon className="w-5 h-5" />
-                      View PYQ
-                    </a>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {pyqs.map((pyq, index) => (
+                      <PyqCard key={`${pyq.code}-${index}`} pyq={pyq} />
+                    ))}
                   </div>
                 </div>
               ))}
-            </div>
-          ) : (
-            <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl p-12 text-center">
-              <div className="text-6xl mb-4">📄</div>
-              <h3 className="text-xl font-black mb-2">No PYQs found</h3>
-              <p className="text-gray-600 font-medium">
-                Try adjusting your filters or search query.
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-2xl font-bold text-gray-700">
+              No PYQs found for your search.
+            </p>
+            <p className="text-gray-500 mt-2">
+              Try adjusting your filters or searching for something else.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -345,4 +322,50 @@ const DownloadIcon = ({ className }: { className?: string }) => (
     <polyline points="7 10 12 15 17 10"></polyline>
     <line x1="12" y1="15" x2="12" y2="3"></line>
   </svg>
+);
+
+const PyqCard = ({ pyq }: { pyq: Pyq }) => (
+  <div
+    className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col h-full"
+  >
+    <div className="flex justify-between items-start mb-4">
+      <span className="px-3 py-1 bg-orange-200 text-orange-900 border-2 border-black rounded-full text-xs font-bold uppercase tracking-wider">
+        B.Tech CS
+      </span>
+      <span className="text-xs font-bold text-gray-400">
+        Sem {pyq.semester}
+      </span>
+    </div>
+
+    <div className="mb-4 flex-grow">
+      <h3 className="text-xl font-black mb-2 line-clamp-2 leading-tight">
+        {pyq.subject}
+      </h3>
+      <div className="space-y-1">
+        <p className="text-sm font-bold text-gray-600 flex items-center gap-2">
+          <span className="w-3 h-3 border border-black rounded-full bg-orange-400"></span>
+          Credits: {pyq.credits}
+        </p>
+        <p className="text-sm font-mono text-gray-500 flex items-center gap-2 pl-0.5">
+          {pyq.code}
+        </p>
+      </div>
+    </div>
+
+    <div className="border-t-2 border-dashed border-gray-200 pt-4 mt-auto">
+      <div className="flex items-center justify-between mb-4 text-xs font-bold text-gray-500">
+        <span>{pyq.year}</span>
+      </div>
+
+      <a
+        href={pyq.src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full py-3 bg-black text-white rounded-lg font-black flex items-center justify-center gap-2 hover:bg-gray-800 transition-all border-2 border-transparent hover:border-black hover:bg-white hover:text-black active:translate-y-[1px]"
+      >
+        <DownloadIcon className="w-5 h-5" />
+        View PYQ
+      </a>
+    </div>
+  </div>
 );
