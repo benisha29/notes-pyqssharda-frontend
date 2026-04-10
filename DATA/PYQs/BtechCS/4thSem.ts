@@ -1,12 +1,12 @@
 //take file location from public folder and add it to the data rather than i manually adding the data for each subject in the pyqs data file.
-const PYQ4_DATA_2024_25 = [
+export const PYQ4_DATA_2024_25 = [
   {
     subject: "Database Management Systems",
     code: "CS201",
     credits: 3,
     semester: 4,
-        year: "2024-25",
-        src:"../../../public/PYQs/BtechCS/4thsem/BDA 202 DATABASE MANAGEMENT SYSTEMS 2024-25.pdf"
+    year: "2024-25",
+    src: "/PYQs/BtechCS/4thsem/BDA 202 DATABASE MANAGEMENT SYSTEMS 2024-25.pdf",
   },
   {
     subject: "Theory of Computation",
@@ -14,7 +14,7 @@ const PYQ4_DATA_2024_25 = [
     credits: 4,
     semester: 4,
     year: "2024-25",
-    src:"../../../public/PYQs/BtechCS/4thsem/CSE 251 THEORY OF COMPUTATION 2024-25.pdf"
+    src: "/PYQs/BtechCS/4thsem/CSE 251 THEORY OF COMPUTATION 2024-25.pdf",
   },
   {
     subject: "Management for Engineers",
@@ -22,7 +22,7 @@ const PYQ4_DATA_2024_25 = [
     credits: 4,
     semester: 4,
     year: "2024-25",
-    src:"../../../public/PYQs/BtechCS/4thsem/HMM 305 MANAGEMENT FOR ENGINEERS 2024-25.pdf"
+    src: "/PYQs/BtechCS/4thsem/HMM 305 MANAGEMENT FOR ENGINEERS 2024-25.pdf",
   },
   {
     subject: "Digital Forensics",
@@ -30,6 +30,6 @@ const PYQ4_DATA_2024_25 = [
     credits: 2,
     semester: 4,
     year: "2024-25",
-    src:"../../../public/PYQs/BtechCS/4thsem/CSC 201 DIGITAL FORENSICS 2024-25.pdf"
+    src: "/PYQs/BtechCS/4thsem/CSC 201 DIGITAL FORENSICS 2024-25.pdf",
   },
 ];
