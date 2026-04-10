@@ -246,9 +246,7 @@ export default function PyqsPage() {
               .map(([semester, pyqs]) => (
                 <div key={semester}>
                   <div className="flex items-center gap-4 mb-8">
-                    <h2 className="text-3xl font-black">
-                      {semester} PYQs
-                    </h2>
+                    <h2 className="text-3xl font-black">{semester} PYQs</h2>
                     <span className="bg-black text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">
                       {pyqs.length}
                     </span>
@@ -325,9 +323,7 @@ const DownloadIcon = ({ className }: { className?: string }) => (
 );
 
 const PyqCard = ({ pyq }: { pyq: Pyq }) => (
-  <div
-    className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col h-full"
-  >
+  <div className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col h-full">
     <div className="flex justify-between items-start mb-4">
       <span className="px-3 py-1 bg-orange-200 text-orange-900 border-2 border-black rounded-full text-xs font-bold uppercase tracking-wider">
         B.Tech CS
