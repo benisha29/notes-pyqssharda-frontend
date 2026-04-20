@@ -34,7 +34,6 @@ export default function RootLayout({
         <ToastProvider />
         <Navbar />
         <AuthProviders>{children}</AuthProviders>
-        <ChatbotWidget />
       </body>
     </html>
   );

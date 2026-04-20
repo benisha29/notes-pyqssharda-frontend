@@ -15,7 +15,7 @@ const GuestMobileNav = () => {
           </Link>
           <div className="flex items-center gap-4">
             <a
-              href="https://www.linkedin.com/posts/nandalalshukla_shardauniversity-btech-engineering-activity-7417953428888293376-ToZ4?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAENPXPMBJ4aMSVhVHnrqUrH1E6gGnQdaGss"
+              href="https://www.linkedin.com/posts/nandalalshukla_sharda-online-librarys-beta-version-is-live-activity-7425992115555446785-Cypr?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAENPXPMBJ4aMSVhVHnrqUrH1E6gGnQdaGss"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
