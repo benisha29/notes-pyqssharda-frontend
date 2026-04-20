@@ -1,86 +1,92 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "react-hot-toast";
-import { useSyllabusStore } from "@/stores/syllabus.store";
-import { SyllabusSearchParams } from "@/lib/api/syllabus.api";
-import Link from "next/link";
+import React, { useState, useMemo } from "react";
+import SYLLABUS2_DATA_2024_25 from "@/DATA/Syllabus/BtechCS/2ndSem";
+import SYLLABUS4_DATA_2024_25 from "@/DATA/Syllabus/BtechCS/4thSem";
+import SYLLABUS6_DATA_2024_25 from "@/DATA/Syllabus/BtechCS/6thSem";
+
+interface SyllabusItem {
+  subject: string;
+  code: string;
+  credits: number;
+  semester: number;
+  year: string;
+  src: string;
+}
 
 export default function SyllabusPage() {
-  const router = useRouter();
-  const urlSearchParams = useSearchParams();
+  const allSyllabus: SyllabusItem[] = [
+    ...SYLLABUS2_DATA_2024_25,
+    ...SYLLABUS4_DATA_2024_25,
+    ...SYLLABUS6_DATA_2024_25,
+  ];
 
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
   const [courseCode, setCourseCode] = useState("");
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const semesterOptions = useMemo(
+    () =>
+      [...new Set(allSyllabus.map((item) => item.semester.toString()))].sort(
+        (a, b) => Number(a) - Number(b),
+      ),
+    [allSyllabus],
+  );
 
-  const {
-    recentSyllabus,
-    searchResults,
-    isLoading,
-    error,
-    fetchRecentSyllabus,
-    searchSyllabus,
-    clearSearchResults,
-  } = useSyllabusStore();
+  const yearOptions = useMemo(
+    () => [...new Set(allSyllabus.map((item) => item.year))].sort().reverse(),
+    [allSyllabus],
+  );
 
-  // Load recent syllabus on mount
-  useEffect(() => {
-    fetchRecentSyllabus(10);
-  }, [fetchRecentSyllabus]);
+  const filteredSyllabus = useMemo(() => {
+    return allSyllabus.filter((item) => {
+      const searchLower = searchQuery.toLowerCase();
+      const codeLower = courseCode.toLowerCase();
 
-  // Load search params from URL
-  useEffect(() => {
-    const query = urlSearchParams.get("q");
-    if (!query && !urlSearchParams.toString()) return;
+      const matchesQuery =
+        !searchQuery ||
+        item.subject.toLowerCase().includes(searchLower) ||
+        item.code.toLowerCase().includes(searchLower);
+      const matchesProgram =
+        !selectedProgram ||
+        "B.Tech CS".toLowerCase() === selectedProgram.toLowerCase();
+      const matchesCode =
+        !courseCode || item.code.toLowerCase().includes(codeLower);
+      const matchesYear = !selectedYear || item.year === selectedYear;
+      const matchesSemester =
+        !selectedSemester || item.semester.toString() === selectedSemester;
 
-    const program = urlSearchParams.get("program");
-    const code = urlSearchParams.get("code");
-    const year = urlSearchParams.get("year");
-    const semester = urlSearchParams.get("semester");
-
-    if (query) setSearchQuery(query);
-    if (program) setSelectedProgram(program);
-    if (code) setCourseCode(code);
-    if (year) setSelectedYear(year);
-    if (semester) setSelectedSemester(semester);
-
-    const params: SyllabusSearchParams = {
-      ...(query && { query }),
-      ...(program && { program }),
-      ...(code && { courseCode: code }),
-      ...(year && { year }),
-      ...(semester && { semester }),
-    };
-
-    searchSyllabus(params).then(() => {
-      setHasSearched(true);
+      return (
+        matchesQuery &&
+        matchesProgram &&
+        matchesCode &&
+        matchesYear &&
+        matchesSemester
+      );
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlSearchParams]);
+  }, [
+    allSyllabus,
+    searchQuery,
+    selectedProgram,
+    courseCode,
+    selectedYear,
+    selectedSemester,
+  ]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setActiveDropdown(null);
+  const syllabusBySemester = useMemo(() => {
+    const grouped: Record<string, SyllabusItem[]> = {};
+    filteredSyllabus.forEach((item) => {
+      const semesterKey = `Semester ${item.semester}`;
+      if (!grouped[semesterKey]) {
+        grouped[semesterKey] = [];
       }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      grouped[semesterKey].push(item);
+    });
+    return grouped;
+  }, [filteredSyllabus]);
 
   const toggleDropdown = (name: string) => {
     setActiveDropdown(activeDropdown === name ? null : name);
@@ -96,112 +102,54 @@ export default function SyllabusPage() {
     setActiveDropdown(null);
   };
 
-  const handleSearch = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-
-    // Allow search with just filters, query is now optional
-    if (
-      !searchQuery.trim() &&
-      !selectedProgram &&
-      !courseCode &&
-      !selectedYear &&
-      !selectedSemester
-    ) {
-      toast.error("Please enter a search query or select at least one filter");
-      return;
-    }
-
-    const searchParams: SyllabusSearchParams = {
-      ...(searchQuery.trim() && { query: searchQuery.trim() }),
-      ...(selectedProgram && { program: selectedProgram }),
-      ...(courseCode && { courseCode: courseCode.toUpperCase() }),
-      ...(selectedYear && { year: selectedYear }),
-      ...(selectedSemester && { semester: selectedSemester }),
-    };
-
-    const urlParams = new URLSearchParams();
-    if (searchParams.query) urlParams.set("q", searchParams.query);
-    if (searchParams.program) urlParams.set("program", searchParams.program);
-    if (searchParams.courseCode) urlParams.set("code", searchParams.courseCode);
-    if (searchParams.year) urlParams.set("year", searchParams.year);
-    if (searchParams.semester) urlParams.set("semester", searchParams.semester);
-
-    router.push(`?${urlParams.toString()}`, { scroll: false });
-
-    try {
-      await searchSyllabus(searchParams).then(() => {
-        setHasSearched(true);
-        toast.success("Search completed!");
-      });
-    } catch {
-      toast.error("Search failed. Please try again.");
-    }
-  };
-
   const handleClearFilters = () => {
     setSearchQuery("");
     setSelectedProgram(null);
     setCourseCode("");
     setSelectedYear(null);
     setSelectedSemester(null);
-    setHasSearched(false);
-    clearSearchResults();
-    router.push(window.location.pathname, { scroll: false });
   };
 
-  const displaySyllabus = hasSearched ? searchResults : recentSyllabus;
-  const sectionTitle = hasSearched ? "Search Results" : "Recently Added";
+  const hasActiveFilter =
+    searchQuery ||
+    selectedProgram ||
+    courseCode ||
+    selectedYear ||
+    selectedSemester;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-100 via-pink-100 to-white text-black p-8 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-yellow-100 to-white text-black p-8 pb-20">
       <div className="max-w-7xl mx-auto">
-        {/* Header - Purple Theme */}
         <div className="text-center mt-8 mb-12">
           <h1 className="text-4xl md:text-6xl font-black mb-4">
-            Course <span className="text-[#C084FC]">Syllabus</span>
+            Course <span className="text-[#FF6B00]">Syllabus</span>
           </h1>
           <p className="text-xl text-gray-700 max-w-2xl mx-auto font-medium">
-            Stay updated with the latest course structures and curriculum.
+            Access semester-wise syllabus and stay aligned with your curriculum.
           </p>
         </div>
 
-        {/* Search & Filter Section */}
         <div className="flex justify-center mb-16">
-          <form
-            onSubmit={handleSearch}
-            className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-visible transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-20"
-          >
-            {/* Top Section: Search Input */}
+          <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-visible transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-20">
             <div className="flex items-center px-6 py-4 bg-white rounded-t-2xl border-b-2 border-dashed border-gray-200">
               <SearchIcon className="w-6 h-6 text-gray-400 mr-4" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search syllabus by program, course..."
+                placeholder="Search by subject name..."
                 className="w-full text-lg text-gray-700 placeholder-gray-400 outline-none bg-transparent"
               />
-              <button
-                type="submit"
-                className="p-2 bg-[#C084FC] rounded-full text-white hover:bg-purple-600 transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none"
-              >
-                <SearchIcon className="w-5 h-5" />
-              </button>
             </div>
 
-            {/* Bottom Section: Filters */}
-            <div
-              ref={dropdownRef}
-              className="bg-purple-50 px-6 py-3 flex flex-wrap items-center gap-3 rounded-b-2xl"
-            >
-              {/* Program Dropdown */}
+            <div className="bg-orange-50 px-6 py-3 flex flex-wrap items-center gap-3 rounded-b-2xl">
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => toggleDropdown("program")}
                   className={`flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 ${
                     selectedProgram
-                      ? "border-purple-400 bg-purple-50"
+                      ? "border-orange-400 bg-orange-50"
                       : "border-black"
                   } text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none`}
                 >
@@ -209,25 +157,12 @@ export default function SyllabusPage() {
                   <ChevronDownIcon className="w-4 h-4" />
                 </button>
                 {activeDropdown === "program" && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black py-2 z-50 max-h-60 overflow-y-auto">
-                    {[
-                      "Computer Science",
-                      "Law",
-                      "Business",
-                      "Agriculture",
-                      "Medical",
-                      "Biotech",
-                      "Civil",
-                      "Mechanical",
-                      "Electrical",
-                      "Architecture",
-                      "Design",
-                      "Pharmacy",
-                    ].map((opt) => (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black py-2 z-50">
+                    {["B.Tech CS"].map((opt) => (
                       <div
                         key={opt}
                         onClick={() => handleSelect("program", opt)}
-                        className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-sm text-black font-medium border-b border-dashed border-gray-100 last:border-0"
+                        className="px-4 py-2 hover:bg-orange-100 cursor-pointer text-sm text-black font-medium"
                       >
                         {opt}
                       </div>
@@ -236,41 +171,65 @@ export default function SyllabusPage() {
                 )}
               </div>
 
-              {/* Course Code Input */}
-              <div className="flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 border-black text-sm font-bold text-gray-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:ring-2 focus-within:ring-purple-400 transition-all">
+              <div className="flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 border-black text-sm font-bold text-gray-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:ring-2 focus-within:ring-orange-400 transition-all">
                 <span className="text-gray-500">Code:</span>
                 <input
                   type="text"
                   value={courseCode}
                   onChange={(e) => setCourseCode(e.target.value)}
-                  placeholder="e.g. CSE101"
+                  placeholder="e.g. CSE251"
                   className="w-24 outline-none text-gray-700 bg-transparent uppercase placeholder:normal-case font-bold"
                 />
               </div>
 
-              {/* Semester Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown("year")}
+                  className={`flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 ${
+                    selectedYear
+                      ? "border-orange-400 bg-orange-50"
+                      : "border-black"
+                  } text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none`}
+                >
+                  {selectedYear || "Year"}{" "}
+                  <ChevronDownIcon className="w-4 h-4" />
+                </button>
+                {activeDropdown === "year" && (
+                  <div className="absolute top-full left-0 mt-2 w-40 bg-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black py-2 z-50">
+                    {yearOptions.map((opt) => (
+                      <div
+                        key={opt}
+                        onClick={() => handleSelect("year", opt)}
+                        className="px-4 py-2 hover:bg-orange-100 cursor-pointer text-sm text-black font-medium border-b border-dashed border-gray-100 last:border-0"
+                      >
+                        {opt}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => toggleDropdown("semester")}
                   className={`flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 ${
                     selectedSemester
-                      ? "border-purple-400 bg-purple-50"
+                      ? "border-orange-400 bg-orange-50"
                       : "border-black"
                   } text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none`}
                 >
-                  {selectedSemester || "Semester"}{" "}
+                  {selectedSemester ? `Sem ${selectedSemester}` : "Semester"}{" "}
                   <ChevronDownIcon className="w-4 h-4" />
                 </button>
                 {activeDropdown === "semester" && (
-                  <div className="absolute top-full left-0 mt-2 w-32 bg-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black py-2 z-50 max-h-60 overflow-y-auto">
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((opt) => (
+                  <div className="absolute top-full left-0 mt-2 w-32 bg-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black py-2 z-50">
+                    {semesterOptions.map((opt) => (
                       <div
                         key={opt}
-                        onClick={() =>
-                          handleSelect("semester", `Semester ${opt}`)
-                        }
-                        className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-sm text-black font-medium border-b border-dashed border-gray-100 last:border-0"
+                        onClick={() => handleSelect("semester", opt)}
+                        className="px-4 py-2 hover:bg-orange-100 cursor-pointer text-sm text-black font-medium"
                       >
                         Semester {opt}
                       </div>
@@ -279,7 +238,7 @@ export default function SyllabusPage() {
                 )}
               </div>
 
-              {hasSearched && (
+              {hasActiveFilter && (
                 <button
                   type="button"
                   onClick={handleClearFilters}
@@ -289,97 +248,44 @@ export default function SyllabusPage() {
                 </button>
               )}
             </div>
-          </form>
+          </div>
         </div>
 
-        {/* Results Section */}
-        <div>
-          <div className="flex items-center gap-3 mb-8">
-            <h2 className="text-3xl font-black">{sectionTitle}</h2>
-            {displaySyllabus && (
-              <span className="px-3 py-1 bg-black text-white rounded-full text-sm font-bold">
-                {displaySyllabus.length}
-              </span>
-            )}
-          </div>
-
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
-              <p className="text-black font-bold">Loading syllabus...</p>
-            </div>
-          ) : error ? (
-            <div className="bg-red-50 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl p-6 text-center">
-              <p className="text-red-600 font-bold">{error}</p>
-            </div>
-          ) : displaySyllabus.length === 0 ? (
-            <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl p-12 text-center">
-              <div className="text-6xl mb-4">📚</div>
-              <h3 className="text-xl font-black mb-2">No syllabus found</h3>
-              <p className="text-gray-600 font-medium">
-                Try adjusting your filters or search query
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {displaySyllabus.map((syllabus) => (
-                <div
-                  key={syllabus._id}
-                  className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col h-full"
-                >
-                  {/* Card Header: Program Badge */}
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="px-3 py-1 bg-purple-200 text-purple-900 border-2 border-black rounded-full text-xs font-bold uppercase tracking-wider">
-                      {syllabus.program}
-                    </span>
-                    <span className="text-xs font-bold text-gray-400">
-                      Sem {syllabus.semester}
+        {Object.keys(syllabusBySemester).length > 0 ? (
+          <div className="space-y-12">
+            {Object.entries(syllabusBySemester)
+              .sort(([a], [b]) =>
+                a.localeCompare(b, undefined, { numeric: true }),
+              )
+              .map(([semester, syllabus]) => (
+                <div key={semester}>
+                  <div className="flex items-center gap-4 mb-8">
+                    <h2 className="text-3xl font-black">{semester} Syllabus</h2>
+                    <span className="bg-black text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">
+                      {syllabus.length}
                     </span>
                   </div>
-
-                  {/* Title & Metadata */}
-                  <div className="mb-4 flex-grow">
-                    <h3 className="text-xl font-black mb-2 line-clamp-2 leading-tight">
-                      {syllabus.title}
-                    </h3>
-                    <div className="space-y-1">
-                      <p className="text-sm font-bold text-gray-600 flex items-center gap-2">
-                        <span className="w-3 h-3 border border-black rounded-full bg-purple-400"></span>
-                        {syllabus.courseName}
-                      </p>
-                      <p className="text-sm font-mono text-gray-500 flex items-center gap-2 pl-0.5">
-                        {syllabus.courseCode}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Footer Stats/Info */}
-                  <div className="border-t-2 border-dashed border-gray-200 pt-4 mt-auto">
-                    <div className="flex items-center justify-between mb-4 text-xs font-bold text-gray-500">
-                      <span>{new Date(syllabus.createdAt).getFullYear()}</span>
-                      <span>
-                        By{" "}
-                        {syllabus.userId && typeof syllabus.userId === "object"
-                          ? syllabus.userId.username || "User"
-                          : "User"}
-                      </span>
-                    </div>
-
-                    <a
-                      href={syllabus.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full py-3 bg-black text-white rounded-lg font-black flex items-center justify-center gap-2 hover:bg-gray-800 transition-all border-2 border-transparent hover:border-black hover:bg-white hover:text-black active:translate-y-[1px]"
-                    >
-                      <DownloadIcon className="w-5 h-5" />
-                      View Syllabus
-                    </a>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {syllabus.map((item, index) => (
+                      <SyllabusCard
+                        key={`${item.code}-${index}`}
+                        syllabus={item}
+                      />
+                    ))}
                   </div>
                 </div>
               ))}
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-2xl font-bold text-gray-700">
+              No syllabus found for your search.
+            </p>
+            <p className="text-gray-500 mt-2">
+              Try adjusting your filters or searching for something else.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -399,6 +305,50 @@ const SearchIcon = ({ className }: { className?: string }) => (
     <circle cx="11" cy="11" r="8"></circle>
     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
   </svg>
+);
+
+const SyllabusCard = ({ syllabus }: { syllabus: SyllabusItem }) => (
+  <div className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col h-full">
+    <div className="flex justify-between items-start mb-4">
+      <span className="px-3 py-1 bg-orange-200 text-orange-900 border-2 border-black rounded-full text-xs font-bold uppercase tracking-wider">
+        B.Tech CS
+      </span>
+      <span className="text-xs font-bold text-gray-400">
+        Sem {syllabus.semester}
+      </span>
+    </div>
+
+    <div className="mb-4 flex-grow">
+      <h3 className="text-xl font-black mb-2 line-clamp-2 leading-tight">
+        {syllabus.subject}
+      </h3>
+      <div className="space-y-1">
+        <p className="text-sm font-bold text-gray-600 flex items-center gap-2">
+          <span className="w-3 h-3 border border-black rounded-full bg-orange-400"></span>
+          Credits: {syllabus.credits}
+        </p>
+        <p className="text-sm font-mono text-gray-500 flex items-center gap-2 pl-0.5">
+          {syllabus.code}
+        </p>
+      </div>
+    </div>
+
+    <div className="border-t-2 border-dashed border-gray-200 pt-4 mt-auto">
+      <div className="flex items-center justify-between mb-4 text-xs font-bold text-gray-500">
+        <span>{syllabus.year}</span>
+      </div>
+
+      <a
+        href={syllabus.src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full py-3 bg-black text-white rounded-lg font-black flex items-center justify-center gap-2 hover:bg-gray-800 transition-all border-2 border-transparent hover:border-black hover:bg-white hover:text-black active:translate-y-[1px]"
+      >
+        <DownloadIcon className="w-5 h-5" />
+        View Syllabus
+      </a>
+    </div>
+  </div>
 );
 
 const ChevronDownIcon = ({ className }: { className?: string }) => (

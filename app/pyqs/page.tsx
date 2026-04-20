@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import PYQ2_DATA_2024_25 from "@/DATA/PYQs/BtechCS/2ndSem";
 import { PYQ4_DATA_2024_25 } from "@/DATA/PYQs/BtechCS/4thSem";
+import { PYQ6_DATA_2024_25 } from "@/DATA/PYQs/BtechCS/6thSem";
 
 // Define the type for a PYQ item based on the data structure
 interface Pyq {
@@ -14,7 +15,24 @@ interface Pyq {
 }
 
 export default function PyqsPage() {
-  const allPyqs: Pyq[] = [...PYQ4_DATA_2024_25, ...PYQ2_DATA_2024_25];
+  const allPyqs: Pyq[] = [
+    ...PYQ2_DATA_2024_25,
+    ...PYQ4_DATA_2024_25,
+    ...PYQ6_DATA_2024_25,
+  ];
+
+  const semesterOptions = useMemo(
+    () =>
+      [...new Set(allPyqs.map((pyq) => pyq.semester.toString()))].sort(
+        (a, b) => Number(a) - Number(b),
+      ),
+    [allPyqs],
+  );
+
+  const yearOptions = useMemo(
+    () => [...new Set(allPyqs.map((pyq) => pyq.year))].sort().reverse(),
+    [allPyqs],
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
@@ -183,7 +201,7 @@ export default function PyqsPage() {
                 </button>
                 {activeDropdown === "year" && (
                   <div className="absolute top-full left-0 mt-2 w-40 bg-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black py-2 z-50">
-                    {["2024-25", "2023-24", "2022-23"].map((opt) => (
+                    {yearOptions.map((opt) => (
                       <div
                         key={opt}
                         onClick={() => handleSelect("year", opt)}
@@ -212,7 +230,7 @@ export default function PyqsPage() {
                 </button>
                 {activeDropdown === "semester" && (
                   <div className="absolute top-full left-0 mt-2 w-32 bg-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black py-2 z-50">
-                    {["4"].map((opt) => (
+                    {semesterOptions.map((opt) => (
                       <div
                         key={opt}
                         onClick={() => handleSelect("semester", opt)}

@@ -38,6 +38,6 @@ export const PYQ6_DATA_2024_25 = [
     credits: 3,
     semester: 6,
     year: "2024-25",
-    src: "/PYQs/BtechCS/6thsem/CSCR 3211 SOFTWARE PROJECT MANAGEMENT 2024-25.pdf",
+    src: "/PYQs/BtechCS/6thsem/CSCR 3211 SOFTWARE PROJECT MANAGEMENT 2024-25 - Copy.pdf",
   },
 ];

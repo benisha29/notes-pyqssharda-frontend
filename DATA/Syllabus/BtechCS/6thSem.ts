@@ -11,7 +11,7 @@ const SYLLABUS6_DATA_2024_25 = [
     src: "/Syllabus/BtechCS/6thsem/CSCR3211_Software Project Management.pdf",
   },
   {
-    subject: "Theory of Computation",
+    subject: "Social Media Analytics",
     code: "CSCR 4202",
     credits: 2,
     semester: 6,

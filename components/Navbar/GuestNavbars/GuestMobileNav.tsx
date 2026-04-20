@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const GuestMobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,9 +9,31 @@ const GuestMobileNav = () => {
   return (
     <div className="w-full text-black p-4">
       <div className="flex justify-between items-center">
-        <Link href="/" className="text-xl font-black tracking-tighter">
-          Sharda Online Library
-        </Link>
+        <div className="flex items-center gap-5">
+          <Link href="/" className="text-xl font-black tracking-tighter">
+            SOL
+          </Link>
+          <div className="flex items-center gap-4">
+            <a
+              href="https://www.linkedin.com/posts/nandalalshukla_shardauniversity-btech-engineering-activity-7417953428888293376-ToZ4?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAENPXPMBJ4aMSVhVHnrqUrH1E6gGnQdaGss"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="text-black hover:scale-110 transition-all"
+            >
+              <FaLinkedin className="w-6 h-6" />
+            </a>
+            <a
+              href="https://github.com/nandalalshukla/notes-pyqssharda-frontend"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="text-black hover:scale-110 transition-all"
+            >
+              <FaGithub className="w-6 h-6" />
+            </a>
+          </div>
+        </div>
         <button onClick={() => setIsOpen(!isOpen)} className="p-2">
           {/* Hamburger / Close Icon */}
           {isOpen ? (
@@ -50,13 +73,6 @@ const GuestMobileNav = () => {
 
       {isOpen && (
         <div className="flex flex-col gap-4 mt-4 pb-4 font-bold">
-          <Link
-            href="/explore"
-            className="hover:text-blue-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Explore
-          </Link>
           <Link
             href="/dashboard"
             className="hover:text-blue-600"

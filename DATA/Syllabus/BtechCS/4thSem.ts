@@ -24,7 +24,7 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 4,
     semester: 4,
     year: "2024-25",
-    src: "/Syllabus/BtechCS/4thsem/HMM 305 MANAGEMENT FOR ENGINEERS 2024-25.pdf",
+    src: "/Syllabus/BtechCS/4thsem/HMM Syllabus 4th sem.pdf",
   },
   {
     subject: "Digital Forensics",
@@ -32,7 +32,7 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 2,
     semester: 4,
     year: "2024-25",
-    src: "/Syllabus/BtechCS/4thsem/CSC 201 DIGITAL FORENSICS 2024-25.pdf",
+    src: "/Syllabus/BtechCS/4thsem/Digital Forensics Syllabus 4th sem.pdf",
   },
 ];
 

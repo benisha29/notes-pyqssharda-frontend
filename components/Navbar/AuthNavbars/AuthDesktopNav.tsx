@@ -5,6 +5,7 @@ import useAuthStore from "@/stores/authStore";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import ModRequestForm from "@/components/ModRequestForm";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const AuthDesktopNav = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -38,12 +39,34 @@ const AuthDesktopNav = () => {
 
   return (
     <div className="flex items-center justify-between w-full py-4 px-8 text-black">
-      <Link
-        href="/"
-        className="text-2xl font-black tracking-tighter hover:scale-105 transition-transform"
-      >
-        Sharda Online Library
-      </Link>
+      <div className="flex items-center gap-5">
+        <Link
+          href="/"
+          className="text-2xl font-black tracking-tighter hover:scale-105 transition-transform"
+        >
+          Sharda Online Library
+        </Link>
+        <div className="flex items-center gap-4">
+          <a
+            href="https://www.linkedin.com/posts/nandalalshukla_shardauniversity-btech-engineering-activity-7417953428888293376-ToZ4?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAENPXPMBJ4aMSVhVHnrqUrH1E6gGnQdaGss"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+            className="text-black hover:scale-110 transition-all"
+          >
+            <FaLinkedin className="w-6 h-6" />
+          </a>
+          <a
+            href="https://github.com/nandalalshukla/notes-pyqssharda-frontend"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="text-black hover:scale-110 transition-all"
+          >
+            <FaGithub className="w-6 h-6" />
+          </a>
+        </div>
+      </div>
       <div className="flex items-center gap-8 font-bold text-sm">
         <Link href="/explore" className="hover:text-blue-600 transition-colors">
           Explore
