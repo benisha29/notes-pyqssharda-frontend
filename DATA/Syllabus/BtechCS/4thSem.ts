@@ -32,7 +32,7 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 2,
     semester: 4,
     year: "2024-25",
-    src: "/PYQs/BtechCS/4thsem/CSC 201 DIGITAL FORENSICS 2024-25.pdf",
+    src: "/Syllabus/BtechCS/4thsem/CSC 201 DIGITAL FORENSICS 2024-25.pdf",
   },
 ];
 
