@@ -168,13 +168,19 @@ export default function AboutUsPage() {
               <FaInstagram className="w-5 h-5" />
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/posts/nandalalshukla_shardauniversity-btech-engineering-activity-7417953428888293376-ToZ4?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAENPXPMBJ4aMSVhVHnrqUrH1E6gGnQdaGss"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
               className="p-3 bg-white border-2 border-black rounded-full hover:scale-110 transition-transform shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
               <FaLinkedin className="w-5 h-5" />
             </a>
             <a
-              href="#"
+              href="https://github.com/nandalalshukla/notes-pyqssharda-frontend"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
               className="p-3 bg-white border-2 border-black rounded-full hover:scale-110 transition-transform shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
               <FaGithub className="w-5 h-5" />
