@@ -118,11 +118,11 @@ export default function SyllabusPage() {
     selectedSemester;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-yellow-100 to-white text-black p-8 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-violet-100 via-purple-100 to-white text-black p-8 pb-20">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mt-8 mb-12">
           <h1 className="text-4xl md:text-6xl font-black mb-4">
-            Course <span className="text-[#FF6B00]">Syllabus</span>
+            Course <span className="text-[#C084FC]">Syllabus</span>
           </h1>
           <p className="text-xl text-gray-700 max-w-2xl mx-auto font-medium">
             Access semester-wise syllabus and stay aligned with your curriculum.
@@ -142,14 +142,14 @@ export default function SyllabusPage() {
               />
             </div>
 
-            <div className="bg-orange-50 px-6 py-3 flex flex-wrap items-center gap-3 rounded-b-2xl">
+            <div className="bg-purple-50 px-6 py-3 flex flex-wrap items-center gap-3 rounded-b-2xl">
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => toggleDropdown("program")}
                   className={`flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 ${
                     selectedProgram
-                      ? "border-orange-400 bg-orange-50"
+                      ? "border-purple-400 bg-purple-50"
                       : "border-black"
                   } text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none`}
                 >
@@ -162,7 +162,7 @@ export default function SyllabusPage() {
                       <div
                         key={opt}
                         onClick={() => handleSelect("program", opt)}
-                        className="px-4 py-2 hover:bg-orange-100 cursor-pointer text-sm text-black font-medium"
+                        className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-sm text-black font-medium"
                       >
                         {opt}
                       </div>
@@ -171,7 +171,7 @@ export default function SyllabusPage() {
                 )}
               </div>
 
-              <div className="flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 border-black text-sm font-bold text-gray-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:ring-2 focus-within:ring-orange-400 transition-all">
+              <div className="flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 border-black text-sm font-bold text-gray-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:ring-2 focus-within:ring-purple-400 transition-all">
                 <span className="text-gray-500">Code:</span>
                 <input
                   type="text"
@@ -188,7 +188,7 @@ export default function SyllabusPage() {
                   onClick={() => toggleDropdown("year")}
                   className={`flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 ${
                     selectedYear
-                      ? "border-orange-400 bg-orange-50"
+                      ? "border-purple-400 bg-purple-50"
                       : "border-black"
                   } text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none`}
                 >
@@ -201,7 +201,7 @@ export default function SyllabusPage() {
                       <div
                         key={opt}
                         onClick={() => handleSelect("year", opt)}
-                        className="px-4 py-2 hover:bg-orange-100 cursor-pointer text-sm text-black font-medium border-b border-dashed border-gray-100 last:border-0"
+                        className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-sm text-black font-medium border-b border-dashed border-gray-100 last:border-0"
                       >
                         {opt}
                       </div>
@@ -216,7 +216,7 @@ export default function SyllabusPage() {
                   onClick={() => toggleDropdown("semester")}
                   className={`flex items-center gap-2 px-4 py-1.5 bg-white rounded-full border-2 ${
                     selectedSemester
-                      ? "border-orange-400 bg-orange-50"
+                      ? "border-purple-400 bg-purple-50"
                       : "border-black"
                   } text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none`}
                 >
@@ -229,7 +229,7 @@ export default function SyllabusPage() {
                       <div
                         key={opt}
                         onClick={() => handleSelect("semester", opt)}
-                        className="px-4 py-2 hover:bg-orange-100 cursor-pointer text-sm text-black font-medium"
+                        className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-sm text-black font-medium"
                       >
                         Semester {opt}
                       </div>
@@ -310,7 +310,7 @@ const SearchIcon = ({ className }: { className?: string }) => (
 const SyllabusCard = ({ syllabus }: { syllabus: SyllabusItem }) => (
   <div className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col h-full">
     <div className="flex justify-between items-start mb-4">
-      <span className="px-3 py-1 bg-orange-200 text-orange-900 border-2 border-black rounded-full text-xs font-bold uppercase tracking-wider">
+      <span className="px-3 py-1 bg-purple-200 text-purple-900 border-2 border-black rounded-full text-xs font-bold uppercase tracking-wider">
         B.Tech CS
       </span>
       <span className="text-xs font-bold text-gray-400">
@@ -324,7 +324,7 @@ const SyllabusCard = ({ syllabus }: { syllabus: SyllabusItem }) => (
       </h3>
       <div className="space-y-1">
         <p className="text-sm font-bold text-gray-600 flex items-center gap-2">
-          <span className="w-3 h-3 border border-black rounded-full bg-orange-400"></span>
+          <span className="w-3 h-3 border border-black rounded-full bg-purple-400"></span>
           Credits: {syllabus.credits}
         </p>
         <p className="text-sm font-mono text-gray-500 flex items-center gap-2 pl-0.5">
