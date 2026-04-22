@@ -8,7 +8,7 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 3,
     semester: 4,
     year: "2024-25",
-    src: "/Syllabus/BtechCS/4thsem/DBMS Syllabus 4th Sem.pdf",
+    src: "/Syllabus/BtechCS/4thsem/DBMS Syllabus 4th sem.pdf",
   },
   {
     subject: "Theory of Computation",
@@ -16,7 +16,7 @@ const SYLLABUS4_DATA_2024_25 = [
     credits: 4,
     semester: 4,
     year: "2024-25",
-    src: "/Syllabus/BtechCS/4thsem/TOC Syllabus 4th Sem.pdf",
+    src: "/Syllabus/BtechCS/4thsem/TOC Syllabus 4th sem.pdf",
   },
   {
     subject: "Management for Engineers",
