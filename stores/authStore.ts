@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { login, logout, getMe } from "@/lib/api/auth.api";
+import { login, logout, logoutAll, getMe } from "@/lib/api/auth.api";
 
 interface User {
   _id: string;
@@ -26,6 +26,7 @@ interface AuthState {
 
   login: (data: { email: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
   fetchMe: () => Promise<void>;
   setAuthLoading: (loading: boolean) => void;
 }
@@ -67,6 +68,20 @@ const useAuthStore = create<AuthState>()(
         });
       },
 
+      logoutAll: async () => {
+        try {
+          await logoutAll();
+        } catch (error) {
+          console.log("Logout all API error (ignored):", error);
+        }
+        set({
+          user: null,
+          isAuthenticated: false,
+          authLoading: false,
+          lastLoginTime: null,
+        });
+      },
+
       fetchMe: async () => {
         try {
           const res = await getMe();
@@ -80,7 +95,7 @@ const useAuthStore = create<AuthState>()(
           // Let the axios interceptor handle actual auth failures during user actions
           console.log(
             "Auth verification failed (cookies may need refresh):",
-            error
+            error,
           );
           set({ authLoading: false });
           // Auth state is preserved - will be cleared only if refresh token also fails
@@ -93,8 +108,8 @@ const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useAuthStore;

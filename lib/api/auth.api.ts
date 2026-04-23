@@ -24,14 +24,14 @@ export const verifyEmail = (data: { otp: string; email: string }) =>
 export const logout = () => api.post("/auth/logout", {});
 
 export const changePassword = (data: {
-  email: string;
   currentPassword: string;
   newPassword: string;
 }) => api.post("/auth/change-password", data);
+
+export const logoutAll = () => api.post("/auth/logout-all", {});
 export const getMe = async () => {
   const res = await api.get("/auth/me", {
     withCredentials: true,
   });
   return res;
 };
-

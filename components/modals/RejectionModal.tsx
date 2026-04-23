@@ -85,7 +85,7 @@ export default function RejectionModal({
               className="text-sm font-bold text-black line-clamp-1"
               title={itemTitle}
             >
-              "{itemTitle}"
+              {itemTitle}
             </p>
           </div>
 

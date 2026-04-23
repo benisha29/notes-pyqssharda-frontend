@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import useAuthStore from "@/stores/authStore";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import ModRequestForm from "@/components/ModRequestForm";
+import ModRequestForm from "@/components/forms/ModRequestForm";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const AuthMobileNav = () => {

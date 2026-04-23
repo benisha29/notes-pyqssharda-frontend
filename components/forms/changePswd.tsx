@@ -8,7 +8,7 @@ import useAuthStore from "@/stores/authStore";
 
 const ChangePasswordForm = () => {
   const router = useRouter();
-  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
   const [formData, setFormData] = useState({
     currentPassword: "",
@@ -39,8 +39,8 @@ const ChangePasswordForm = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters");
       return;
     }
 
@@ -54,21 +54,15 @@ const ChangePasswordForm = () => {
       return;
     }
 
-    if (!user?.email) {
-      toast.error("User not found. Please log in again.");
-      return;
-    }
-
     setLoading(true);
 
     try {
       await changePassword({
-        email: user.email,
         currentPassword,
         newPassword,
       });
 
-      toast.success("Password changed successfully");
+      toast.success("Password changed successfully. Please log in again.");
 
       setFormData({
         currentPassword: "",
@@ -76,8 +70,8 @@ const ChangePasswordForm = () => {
         confirmNewPassword: "",
       });
 
-      // optional: redirect
-      router.push("/dashboard");
+      await logout();
+      router.push("/auth/login");
     } catch (error: unknown) {
       toast.error("Failed to change password");
     } finally {

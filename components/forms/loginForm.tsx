@@ -48,7 +48,10 @@ const LoginForm = () => {
       setFormData({ email: "", password: "" });
       router.push("/dashboard");
     } catch (error: unknown) {
-      toast.error("Invalid email or password");
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Invalid email or password";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
